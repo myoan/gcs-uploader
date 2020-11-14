@@ -52,10 +52,10 @@ func walk(root, dir string) []string {
 	return paths
 }
 
-func readHash(path string) string {
+func readHash(path string) (string, error) {
 	fp, err := os.Open(path)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	defer fp.Close()
 
@@ -71,7 +71,7 @@ func readHash(path string) string {
 		}
 		hash += string(buf[:n])
 	}
-	return hash
+	return hash, nil
 }
 
 func main() {
