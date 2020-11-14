@@ -95,12 +95,12 @@ func main() {
 		panic("bucket not found")
 	}
 
-	fmt.Printf("-------------------\n")
-	fmt.Printf("bucket: %s\n", *bn)
+	fmt.Printf("---------------------------------------------\n\n")
+	fmt.Printf("bucket:     %s\n", *bn)
 	fmt.Printf("credential: %s\n", *cr)
-	fmt.Printf("input: %s\n", *in)
-	fmt.Printf("output: %s\n", *out)
-	fmt.Printf("-------------------\n\n")
+	fmt.Printf("input:      %s\n", *in)
+	fmt.Printf("output:     %s\n", *out)
+	fmt.Printf("---------------------------------------------\n\n")
 
 	limit := make(chan struct{}, 4)
 	var wg sync.WaitGroup
