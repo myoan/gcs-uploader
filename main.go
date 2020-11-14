@@ -76,10 +76,11 @@ func readHash(path string) (string, error) {
 
 func main() {
 	var (
-		bn  = flag.String("b", "default", "backetname")
-		cr  = flag.String("cred", "default", "credential path")
-		in  = flag.String("in", "default", "input dir path")
-		out = flag.String("out", "default", "output dir path")
+		bn   = flag.String("b", "default", "backetname")
+		cr   = flag.String("cred", "default", "credential path")
+		in   = flag.String("in", "default", "input dir path")
+		out  = flag.String("out", "default", "output dir path")
+		conc = flag.Int("out", 4, "upload cuncurrency")
 	)
 	flag.Parse()
 
@@ -102,7 +103,7 @@ func main() {
 	fmt.Printf("output:     %s\n", *out)
 	fmt.Printf("---------------------------------------------\n\n")
 
-	limit := make(chan struct{}, 4)
+	limit := make(chan struct{}, *conc)
 	var wg sync.WaitGroup
 	for _, f := range walk(*in, "") {
 		wg.Add(1)
