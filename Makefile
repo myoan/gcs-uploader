@@ -10,7 +10,7 @@ all: build
 
 build: deps
 	mkdir -p $(BUILD_DIR)
-	cd ${BUILD_DIR} && GOOS=$(GOOS) GOARCH=$(GOARCH) go build $(GOFLAGS) -o gcs-client ../../*.go
+	cd ${BUILD_DIR} && GOOS=$(GOOS) GOARCH=$(GOARCH) go build $(GOFLAGS) -o gcs-uploader ../../*.go
 
 clean:
 	rm -rf build package
@@ -26,8 +26,8 @@ package:
 
 package-zip: build
 	mkdir -p package
-	cd $(BUILD_DIR) && zip ../../package/gcs-client_$(GOOS)_$(GOARCH).zip gcs-client
+	cd $(BUILD_DIR) && zip ../../package/gcs-uploader_$(GOOS)_$(GOARCH).zip gcs-uploader
 
 package-targz: build
 	mkdir -p package
-	cd $(BUILD_DIR) && tar zcvf ../../package/gcs-client_$(GOOS)_$(GOARCH).tar.gz gcs-client
+	cd $(BUILD_DIR) && tar zcvf ../../package/gcs-uploader_$(GOOS)_$(GOARCH).tar.gz gcs-uploader
