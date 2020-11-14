@@ -76,13 +76,29 @@ func readHash(path string) (string, error) {
 
 func main() {
 	var (
-		bn   = flag.String("b", "default", "backetname")
-		cr   = flag.String("cred", "default", "credential path")
-		in   = flag.String("in", "default", "input dir path")
-		out  = flag.String("out", "default", "output dir path")
+		bn   = flag.String("b", "", "backetname")
+		cr   = flag.String("cred", "", "credential path")
+		in   = flag.String("in", "", "input dir path")
+		out  = flag.String("out", "", "output dir path")
 		conc = flag.Int("out", 4, "upload cuncurrency")
 	)
 	flag.Parse()
+
+	if len(*bn) == 0 {
+		panic("err: undefined bucket name")
+	}
+
+	if len(*cr) == 0 {
+		panic("err: undefined credential path")
+	}
+
+	if len(*in) == 0 {
+		panic("err: undefined input path")
+	}
+
+	if len(*out) == 0 {
+		panic("err: undefined output path")
+	}
 
 	ctx := context.Background()
 
