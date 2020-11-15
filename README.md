@@ -9,8 +9,8 @@ Install from https://github.com/myoan/gcs-uploader/releases
 ## usage
 
 ```
-❯ ./gcs-client -help
-Usage of ./gcs-client:
+❯ ./gcs-uploader -help
+Usage of ./gcs-uploader:
   -b string
         backetname
   -conc int
