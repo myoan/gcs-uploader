@@ -14,8 +14,8 @@ import (
 	"google.golang.org/api/option"
 )
 
-func upload(ctx context.Context, bh *storage.BucketHandle, srcPath, dstPath string) error {
-	fmt.Printf("upload: %s\n", dstPath)
+func upload(ctx context.Context, bname string, bh *storage.BucketHandle, srcPath, dstPath string) error {
+	fmt.Printf("upload: gs://%s\n", filepath.Join(bname, dstPath))
 	obj := bh.Object(dstPath)
 	writer := obj.NewWriter(ctx)
 
@@ -80,7 +80,7 @@ func main() {
 		cr   = flag.String("cred", "", "credential path")
 		in   = flag.String("in", "", "input dir path")
 		out  = flag.String("out", "", "output dir path")
-		conc = flag.Int("out", 4, "upload cuncurrency")
+		conc = flag.Int("conc", 4, "upload cuncurrency")
 	)
 	flag.Parse()
 
@@ -100,6 +100,13 @@ func main() {
 		panic("err: undefined output path")
 	}
 
+	fmt.Printf("---------------------------------------------\n")
+	fmt.Printf("bucket:     %s\n", *bn)
+	fmt.Printf("credential: %s\n", *cr)
+	fmt.Printf("input:      %s\n", *in)
+	fmt.Printf("output:     %s\n", *out)
+	fmt.Printf("---------------------------------------------\n\n")
+
 	ctx := context.Background()
 
 	client, err := storage.NewClient(ctx, option.WithCredentialsFile(*cr))
@@ -112,23 +119,21 @@ func main() {
 		panic("bucket not found")
 	}
 
-	fmt.Printf("---------------------------------------------\n\n")
-	fmt.Printf("bucket:     %s\n", *bn)
-	fmt.Printf("credential: %s\n", *cr)
-	fmt.Printf("input:      %s\n", *in)
-	fmt.Printf("output:     %s\n", *out)
-	fmt.Printf("---------------------------------------------\n\n")
-
 	limit := make(chan struct{}, *conc)
 	var wg sync.WaitGroup
 	for _, f := range walk(*in, "") {
 		wg.Add(1)
-		go func(ctx context.Context, bh *storage.BucketHandle, src, dst string) {
+		srcPath := filepath.Join(*in, f)
+		dstPath := filepath.Join(*out, f)
+		go func(ctx context.Context, bname string, bh *storage.BucketHandle, src, dst string) {
 			limit <- struct{}{}
 			defer wg.Done()
-			upload(ctx, bh, src, dst)
+			err := upload(ctx, bname, bh, src, dst)
+			if err != nil {
+				panic(err)
+			}
 			<-limit
-		}(ctx, b, f, filepath.Join(*out, f))
+		}(ctx, *bn, b, srcPath, dstPath)
 	}
 	wg.Wait()
 }
