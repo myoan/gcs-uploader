@@ -14,8 +14,8 @@ import (
 	"google.golang.org/api/option"
 )
 
-func upload(ctx context.Context, bh *storage.BucketHandle, srcPath, dstPath string) error {
-	fmt.Printf("upload: %s\n", dstPath)
+func upload(ctx context.Context, bname string, bh *storage.BucketHandle, srcPath, dstPath string) error {
+	fmt.Printf("upload: gs://%s\n", filepath.Join(bname, dstPath))
 	obj := bh.Object(dstPath)
 	writer := obj.NewWriter(ctx)
 
@@ -100,7 +100,7 @@ func main() {
 		panic("err: undefined output path")
 	}
 
-	fmt.Printf("---------------------------------------------\n\n")
+	fmt.Printf("---------------------------------------------\n")
 	fmt.Printf("bucket:     %s\n", *bn)
 	fmt.Printf("credential: %s\n", *cr)
 	fmt.Printf("input:      %s\n", *in)
@@ -125,15 +125,15 @@ func main() {
 		wg.Add(1)
 		srcPath := filepath.Join(*in, f)
 		dstPath := filepath.Join(*out, f)
-		go func(ctx context.Context, bh *storage.BucketHandle, src, dst string) {
+		go func(ctx context.Context, bname string, bh *storage.BucketHandle, src, dst string) {
 			limit <- struct{}{}
 			defer wg.Done()
-			err := upload(ctx, bh, src, dst)
+			err := upload(ctx, bname, bh, src, dst)
 			if err != nil {
 				panic(err)
 			}
 			<-limit
-		}(ctx, b, srcPath, dstPath)
+		}(ctx, *bn, b, srcPath, dstPath)
 	}
 	wg.Wait()
 }
